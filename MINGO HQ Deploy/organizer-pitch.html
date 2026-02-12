@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINGO Tickets - Stop Overpaying for Ticketing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .accent-green {
+            color: #45B75F;
+        }
+
+        .accent-orange {
+            color: #F15F22;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #272943 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(69, 183, 95, 0.15) 0%, transparent 70%);
+            top: -250px;
+            right: -250px;
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(241, 95, 34, 0.1) 0%, transparent 70%);
+            bottom: -200px;
+            left: -200px;
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
+            color: #b0b0b0;
+            margin-bottom: 48px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 48px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            color: #45B75F;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #b0b0b0;
+            margin-top: 8px;
+        }
+
+        /* Problem Section */
+        .problem {
+            background: #272943;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .problem-card {
+            background: #0a0a0a;
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid rgba(241, 95, 34, 0.3);
+        }
+
+        .problem-card h3 {
+            color: #F15F22;
+        }
+
+        .problem-card p {
+            color: #b0b0b0;
+            line-height: 1.8;
+        }
+
+        /* Solution Section */
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .solution-card {
+            background: linear-gradient(135deg, #272943 0%, #1a1a2e 100%);
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid rgba(69, 183, 95, 0.3);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-5px);
+            border-color: #45B75F;
+        }
+
+        .solution-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .solution-card h3 {
+            color: #45B75F;
+        }
+
+        .solution-card p {
+            color: #b0b0b0;
+            line-height: 1.8;
+        }
+
+        /* Fee Comparison */
+        .fee-comparison {
+            background: #272943;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .comparison-card {
+            background: #0a0a0a;
+            padding: 32px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .comparison-card.mingo {
+            background: linear-gradient(135deg, #1a4d2e 0%, #0a2818 100%);
+            border-color: #45B75F;
+            transform: scale(1.05);
+        }
+
+        .comparison-card .platform {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #b0b0b0;
+        }
+
+        .comparison-card.mingo .platform {
+            color: #45B75F;
+        }
+
+        .comparison-card .fee {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #F15F22;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.mingo .fee {
+            color: #45B75F;
+        }
+
+        .comparison-card .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #45B75F;
+            color: #0a0a0a;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 16px;
+            font-size: 0.875rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: #0a0a0a;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 48px;
+            margin-top: 48px;
+            position: relative;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #45B75F, #2d8a45);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 auto 24px;
+        }
+
+        .step h3 {
+            color: #45B75F;
+        }
+
+        .step p {
+            color: #b0b0b0;
+            line-height: 1.8;
+        }
+
+        /* Social Proof */
+        .social-proof {
+            background: #272943;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .partner-card {
+            background: #0a0a0a;
+            padding: 32px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(69, 183, 95, 0.2);
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #45B75F;
+        }
+
+        .global-stat {
+            text-align: center;
+            margin-top: 64px;
+            padding: 48px;
+            background: linear-gradient(135deg, #1a4d2e 0%, #0a2818 100%);
+            border-radius: 12px;
+        }
+
+        .global-stat .big-number {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #45B75F;
+        }
+
+        .global-stat p {
+            font-size: 1.5rem;
+            color: #b0b0b0;
+            margin-top: 16px;
+        }
+
+        /* Event Types */
+        .event-types {
+            background: #0a0a0a;
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .event-card {
+            background: #272943;
+            padding: 32px 24px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(69, 183, 95, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .event-card:hover {
+            background: linear-gradient(135deg, #272943, #1a4d2e);
+            border-color: #45B75F;
+            transform: translateY(-5px);
+        }
+
+        .event-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .event-card h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Tech Section */
+        .tech {
+            background: #272943;
+        }
+
+        .tech-benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .tech-card {
+            background: #0a0a0a;
+            padding: 32px;
+            border-radius: 12px;
+            border-left: 4px solid #45B75F;
+        }
+
+        .tech-card h3 {
+            color: #45B75F;
+            margin-bottom: 16px;
+        }
+
+        .tech-card p {
+            color: #b0b0b0;
+            line-height: 1.8;
+        }
+
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a4d2e 100%);
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .cta h2 {
+            margin-bottom: 48px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 48px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 18px 48px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #45B75F;
+            color: #0a0a0a;
+        }
+
+        .btn-primary:hover {
+            background: #39a050;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(69, 183, 95, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #45B75F;
+            border: 2px solid #45B75F;
+        }
+
+        .btn-secondary:hover {
+            background: #45B75F;
+            color: #0a0a0a;
+        }
+
+        .contact-info {
+            font-size: 1.125rem;
+            color: #b0b0b0;
+            margin-top: 32px;
+        }
+
+        .contact-info a {
+            color: #45B75F;
+            text-decoration: none;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 60px 0;
+            }
+
+            .hero-stats {
+                gap: 32px;
+            }
+
+            .comparison-card.mingo {
+                transform: scale(1);
+            }
+
+            .steps {
+                gap: 32px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Stop Overpaying for <span class="accent-green">Ticketing</span></h1>
+                <p class="hero-subtitle">
+                    The ticketing industry has been charging 15-27% fees for decades. MINGO Tickets changes everything with blockchain-powered NFT tickets at just 3.5% — with zero compromise on features, security, or ease of use.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">3.5%</span>
+                        <span class="stat-label">Platform Fees</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">54</span>
+                        <span class="stat-label">Countries Live</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">&lt;1s</span>
+                        <span class="stat-label">Ticket Verification</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem -->
+    <section class="problem">
+        <div class="container">
+            <h2>The <span class="accent-orange">Problem</span> with Legacy Ticketing</h2>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>💸 Outrageous Fees</h3>
+                    <p>Traditional platforms charge 15-27% in fees. On a $100 ticket, that's $15-27 straight out of your pocket — or passed to your fans, making tickets more expensive.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>🎭 Ticket Fraud</h3>
+                    <p>Fake tickets cost the industry millions. PDF tickets can be copied and sold multiple times, leading to angry fans and damaged reputations.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>🎟️ Scalping Nightmare</h3>
+                    <p>Bots buy tickets in seconds, reselling them at 5-10x the price. Your fans pay extortionate amounts while you see none of that revenue.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>💰 Zero Resale Revenue</h3>
+                    <p>When tickets get resold on secondary markets, organizers and artists get nothing. All that value goes to scalpers and third-party platforms.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The MINGO Difference -->
+    <section class="solution">
+        <div class="container">
+            <h2>The <span class="accent-green">MINGO</span> Difference</h2>
+            <div class="solution-grid">
+                <div class="solution-card">
+                    <span class="solution-icon">💰</span>
+                    <h3>3.5% Fees</h3>
+                    <p>Keep more of your revenue. At 3.5%, we charge up to 8x less than traditional platforms. That means more money for your event, artists, or your pocket.</p>
+                </div>
+                <div class="solution-card">
+                    <span class="solution-icon">🔒</span>
+                    <h3>NFT Tickets</h3>
+                    <p>Each ticket is a unique NFT on Hedera blockchain. Impossible to fake, impossible to duplicate. Your fans get real tickets, every time.</p>
+                </div>
+                <div class="solution-card">
+                    <span class="solution-icon">🛡️</span>
+                    <h3>Anti-Scalping Built-In</h3>
+                    <p>Set maximum resale price caps. Control the secondary market. Protect your fans from price gouging and bots.</p>
+                </div>
+                <div class="solution-card">
+                    <span class="solution-icon">💸</span>
+                    <h3>Automatic Royalties</h3>
+                    <p>Earn from every resale. Set your royalty percentage and get paid automatically when tickets change hands. No middlemen, no hassle.</p>
+                </div>
+                <div class="solution-card">
+                    <span class="solution-icon">📱</span>
+                    <h3>No App Required (PWA)</h3>
+                    <p>Works on any phone, any browser. No download, no installation. Tickets appear in the user's browser instantly — it just works.</p>
+                </div>
+                <div class="solution-card">
+                    <span class="solution-icon">✅</span>
+                    <h3>Zero Crypto Knowledge</h3>
+                    <p>Email signup. Card payment. QR code entry. Your fans don't need to know what blockchain is — they just buy tickets and show up.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fee Comparison -->
+    <section class="fee-comparison">
+        <div class="container">
+            <h2>Stop Losing Money to <span class="accent-orange">Fees</span></h2>
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <div class="platform">Legacy Ticketing</div>
+                    <div class="fee">27%</div>
+                    <p style="color: #b0b0b0; margin-top: 16px;">On a $10,000 event, you lose <strong style="color: #F15F22;">$2,700</strong></p>
+                </div>
+                <div class="comparison-card">
+                    <div class="platform">Eventbrite</div>
+                    <div class="fee">6.9%+</div>
+                    <p style="color: #b0b0b0; margin-top: 16px;">On a $10,000 event, you lose <strong style="color: #F15F22;">$690+</strong></p>
+                </div>
+                <div class="comparison-card">
+                    <div class="platform">Dice</div>
+                    <div class="fee">~10%</div>
+                    <p style="color: #b0b0b0; margin-top: 16px;">On a $10,000 event, you lose <strong style="color: #F15F22;">$1,000</strong></p>
+                </div>
+                <div class="comparison-card mingo">
+                    <div class="platform">MINGO Tickets</div>
+                    <div class="fee">3.5%</div>
+                    <p style="color: #b0b0b0; margin-top: 16px;">On a $10,000 event, you pay only <strong style="color: #45B75F;">$350</strong></p>
+                    <span class="badge">SAVE UP TO $2,350</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2>How It <span class="accent-green">Works</span></h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Sign Up</h3>
+                    <p>Create your organizer account in under 2 minutes. No blockchain knowledge required. Just email and payment details.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Create Your Event</h3>
+                    <p>Set up your event details, ticket tiers, pricing, and resale rules. Upload images, add descriptions, and customize everything.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Start Selling</h3>
+                    <p>Share your event link. Fans buy tickets with cards. NFT tickets are delivered instantly. You check them in with QR codes at the gate.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="social-proof">
+        <div class="container">
+            <h2>Trusted by <span class="accent-green">World-Class</span> Organizations</h2>
+            <div class="partners-grid">
+                <div class="partner-card">🥊 World Boxing Council</div>
+                <div class="partner-card">🎪 Fight Circus</div>
+                <div class="partner-card">🥊 African Boxing League</div>
+                <div class="partner-card">🎭 Comic-Con Ireland</div>
+                <div class="partner-card">🎵 Napster AI</div>
+                <div class="partner-card">🥊 Goldstar Promotions</div>
+            </div>
+            <div class="global-stat">
+                <div class="big-number">54</div>
+                <p>Countries worldwide trust MINGO for their events</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Built for Every Event -->
+    <section class="event-types">
+        <div class="container">
+            <h2>Built for <span class="accent-green">Every Event</span></h2>
+            <p style="text-align: center; color: #b0b0b0; font-size: 1.25rem; margin-bottom: 32px;">
+                From intimate gatherings to massive festivals. 10 people to 100,000. We scale with you.
+            </p>
+            <div class="event-grid">
+                <div class="event-card">
+                    <div class="event-icon">🎵</div>
+                    <h4>Music</h4>
+                </div>
+                <div class="event-card">
+                    <div class="event-icon">😂</div>
+                    <h4>Comedy</h4>
+                </div>
+                <div class="event-card">
+                    <div class="event-icon">⚽</div>
+                    <h4>Sports</h4>
+                </div>
+                <div class="event-card">
+                    <div class="event-icon">🎭</div>
+                    <h4>Theatre</h4>
+                </div>
+                <div class="event-card">
+                    <div class="event-icon">💼</div>
+                    <h4>Conferences</h4>
+                </div>
+                <div class="event-card">
+                    <div class="event-icon">❤️</div>
+                    <h4>Charity</h4>
+                </div>
+                <div class="event-card">
+                    <div class="event-icon">🎉</div>
+                    <h4>Nightlife</h4>
+                </div>
+                <div class="event-card">
+                    <div class="event-icon">🍽️</div>
+                    <h4>Food & Drink</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Tech -->
+    <section class="tech">
+        <div class="container">
+            <h2>Enterprise-Grade <span class="accent-green">Infrastructure</span></h2>
+            <div class="tech-benefits">
+                <div class="tech-card">
+                    <h3>🌐 Built on Hedera</h3>
+                    <p>Hedera is governed by Google, IBM, Boeing, and other Fortune 500 companies. This isn't some experimental blockchain — it's enterprise-grade infrastructure trusted by the world's biggest corporations.</p>
+                </div>
+                <div class="tech-card">
+                    <h3>⚡ Lightning Fast</h3>
+                    <p>Sub-second ticket verification at the gate. No waiting, no delays. Scan the QR code and your fans are in. Scales to thousands of entries per minute.</p>
+                </div>
+                <div class="tech-card">
+                    <h3>🌱 Carbon Negative</h3>
+                    <p>Unlike energy-hungry blockchains, Hedera is carbon negative. Your events can be more sustainable while using cutting-edge technology.</p>
+                </div>
+                <div class="tech-card">
+                    <h3>🛡️ Bank-Level Security</h3>
+                    <p>Industry-leading security with cryptographic verification. Your tickets, your data, and your revenue are protected by the same tech that secures billions in transactions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Save Thousands on <span class="accent-green">Fees?</span></h2>
+            <div class="cta-buttons">
+                <a href="https://tickets.mingo.com" class="btn btn-primary" target="_blank">Get Started Free</a>
+                <a href="mailto:cillian@mingoapps.com" class="btn btn-secondary">Schedule a Demo</a>
+            </div>
+            <div class="contact-info">
+                Questions? Reach out: <a href="mailto:cillian@mingoapps.com">cillian@mingoapps.com</a>
+            </div>
+            <p style="color: #b0b0b0; margin-top: 48px; font-size: 0.875rem;">
+                MINGO Tickets © 2018-2026 | Powered by Hedera | Trusted in 54 Countries
+            </p>
+        </div>
+    </section>
+</body>
+</html>

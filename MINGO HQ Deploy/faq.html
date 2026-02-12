@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINGO — Organizer FAQ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 2px solid #272943;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* Search */
+        .search-box {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            background-color: #272943;
+            color: #ffffff;
+            border: 2px solid #272943;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #45B75F;
+        }
+
+        .search-box::placeholder {
+            color: #888;
+        }
+
+        /* Category Filters */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background-color: #272943;
+            color: #ffffff;
+            border: 2px solid #272943;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .filter-btn:hover {
+            background-color: #45B75F;
+            border-color: #45B75F;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background-color: #45B75F;
+            border-color: #45B75F;
+        }
+
+        /* FAQ Items */
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #45B75F;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .faq-item {
+            background-color: #272943;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(69, 183, 95, 0.15);
+        }
+
+        .faq-question {
+            padding: 20px 24px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: #45B75F;
+        }
+
+        .faq-toggle {
+            font-size: 24px;
+            color: #45B75F;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+            margin-left: 16px;
+        }
+
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 24px;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 1000px;
+            padding: 0 24px 20px 24px;
+        }
+
+        .faq-answer p {
+            color: #ccc;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer li {
+            color: #ccc;
+            margin-bottom: 8px;
+        }
+
+        .faq-answer strong {
+            color: #45B75F;
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+            font-size: 18px;
+            display: none;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, #45B75F 0%, #272943 100%);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cta-text {
+            font-size: 16px;
+            margin-bottom: 30px;
+            color: #eee;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .cta-btn-primary {
+            background-color: #F15F22;
+            color: #ffffff;
+        }
+
+        .cta-btn-primary:hover {
+            background-color: #d54d1a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(241, 95, 34, 0.4);
+        }
+
+        .cta-btn-secondary {
+            background-color: #ffffff;
+            color: #272943;
+        }
+
+        .cta-btn-secondary:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .filters {
+                gap: 8px;
+            }
+
+            .filter-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .category-title {
+                font-size: 20px;
+            }
+
+            .faq-question {
+                font-size: 16px;
+                padding: 16px 18px;
+            }
+
+            .faq-answer {
+                padding: 0 18px;
+            }
+
+            .faq-item.active .faq-answer {
+                padding: 0 18px 16px 18px;
+            }
+
+            .cta-section {
+                padding: 30px 20px;
+            }
+
+            .cta-title {
+                font-size: 22px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .cta-btn {
+                width: 100%;
+            }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🎟️ MINGO</div>
+            <div class="subtitle">Organizer FAQ — Compiled: 2026-02-12</div>
+        </div>
+
+        <!-- Search Box -->
+        <input type="text" class="search-box" id="searchBox" placeholder="Search questions...">
+
+        <!-- Category Filters -->
+        <div class="filters">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="fees">Fees & Pricing</button>
+            <button class="filter-btn" data-category="how-it-works">How It Works</button>
+            <button class="filter-btn" data-category="security">Security</button>
+            <button class="filter-btn" data-category="resale">Resale</button>
+            <button class="filter-btn" data-category="technology">Technology</button>
+            <button class="filter-btn" data-category="business">Business</button>
+            <button class="filter-btn" data-category="getting-started">Getting Started</button>
+        </div>
+
+        <!-- FAQ Content -->
+        <div id="faqContent">
+            <!-- Fees & Pricing -->
+            <div class="category-section" data-category="fees">
+                <div class="category-title">Fees & Pricing</div>
+                
+                <div class="faq-item" data-search="what does mingo charge fees pricing cost">
+                    <div class="faq-question">
+                        What does MINGO charge?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>3.5% of the ticket face value. That's it. No service fees, no processing fees, no hidden charges, no monthly subscription.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="compare pricing fees other platforms eventbrite dice">
+                    <div class="faq-question">
+                        How does 3.5% compare to other platforms?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>Legacy platforms</strong> (the big names): 15-27%</li>
+                            <li><strong>Eventbrite:</strong> 6.9% + €0.79 per ticket</li>
+                            <li><strong>Dice:</strong> ~10%</li>
+                            <li><strong>MINGO:</strong> 3.5%</li>
+                        </ul>
+                        <p>On a €50 ticket, MINGO charges €1.75. Legacy platforms charge €7.50-€13.50. The savings add up fast.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="other costs fees charges setup monthly">
+                    <div class="faq-question">
+                        Are there any other costs?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No setup fees, no monthly fees, no minimum ticket requirements, no contracts. You pay 3.5% when tickets sell. That's the entire cost structure.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="who pays fee organizer buyer customer">
+                    <div class="faq-question">
+                        Who pays the fee — the organizer or the ticket buyer?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>That's up to you. You can absorb the 3.5% or pass it on to the buyer. Either way, it's dramatically less than what legacy platforms charge.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="currencies support payment euro dollar">
+                    <div class="faq-question">
+                        What currencies do you support?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We support major fiat currencies. Buyers pay with their regular debit/credit card. No crypto needed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="category-section" data-category="how-it-works">
+                <div class="category-title">How It Works</div>
+                
+                <div class="faq-item" data-search="setup event create start begin">
+                    <div class="faq-question">
+                        How do I set up an event?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Sign up with your email, create your event (name, date, venue, ticket types, pricing), and publish. Tickets are live immediately. Takes about 5 minutes.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="app download customers install pwa">
+                    <div class="faq-question">
+                        Do my customers need to download an app?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No. MINGO is a progressive web app (PWA). It works in any mobile browser on any phone. No app store, no download, no friction.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="blockchain crypto customers users knowledge">
+                    <div class="faq-question">
+                        Do my customers need to know anything about blockchain or crypto?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely not. The user experience is: pick event → buy ticket with card → receive QR code → scan at door. The blockchain verification happens invisibly behind the scenes.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="entry scanning qr code door verification">
+                    <div class="faq-question">
+                        How does entry/scanning work?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Each ticket has a unique QR code. At the door, you scan it with any phone or tablet running our scanner. Verification takes under 1 second. The system confirms the ticket is genuine, hasn't been used, and belongs to the right person.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="ticket types vip early bird general admission">
+                    <div class="faq-question">
+                        Can I sell different ticket types (VIP, early bird, general admission)?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes. Create as many ticket types as you need with different prices and quantities.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="minimum maximum event size capacity">
+                    <div class="faq-question">
+                        Is there a minimum or maximum event size?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No minimum. No maximum. We've handled events from 10 people to large-scale international events. The tech scales.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="reserved seating seat maps assigned">
+                    <div class="faq-question">
+                        What about reserved seating / seat maps?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>This is not currently available. We're working on it. For now, MINGO works best for general admission events. If you need assigned seating, let us know your timeline and we can discuss.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security & Fraud -->
+            <div class="category-section" data-category="security">
+                <div class="category-title">Security & Fraud</div>
+                
+                <div class="faq-item" data-search="fake tickets prevent fraud counterfeit">
+                    <div class="faq-question">
+                        How does MINGO prevent fake tickets?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Every ticket is minted as an NFT (non-fungible token) on the Hedera network. This means each ticket is cryptographically unique and verifiable. It literally cannot be duplicated or faked. When scanned at the door, the system checks the blockchain in real-time.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="scalping price cap resale limit">
+                    <div class="faq-question">
+                        What about scalping?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>You set the rules. MINGO lets you cap resale prices — for example, no more than 110% of face value. This is enforced at the smart contract level, meaning it can't be bypassed. Fans pay fair prices.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="transfer resold tickets secondary market">
+                    <div class="faq-question">
+                        Can tickets be transferred or resold?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, through the MINGO platform. You control whether resale is allowed, and at what price cap. If a ticket is resold, you (the organiser) automatically receive a royalty on the resale. Every time.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="screenshot qr code steal fraud">
+                    <div class="faq-question">
+                        What if someone screenshots another person's QR code?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Won't work. Each ticket is tied to a specific account and verified on-chain. A screenshot doesn't transfer ownership. The scanner will reject it.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resale & Royalties -->
+            <div class="category-section" data-category="resale">
+                <div class="category-title">Resale & Royalties</div>
+                
+                <div class="faq-item" data-search="resale royalties work secondary market earnings">
+                    <div class="faq-question">
+                        How do resale royalties work?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>When you create an event, you set a resale royalty percentage. If a ticket is resold through MINGO, that percentage automatically goes to you. This is enforced by smart contract — no manual tracking, no honour system.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="typical royalty percentage resale">
+                    <div class="faq-question">
+                        What's a typical royalty percentage?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>That's up to you. Many organisers set 5-15% of the resale price. For the first time, you earn from secondary market activity instead of losing it entirely.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="resale only mingo platform external">
+                    <div class="faq-question">
+                        Is resale only through MINGO?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Resale is managed through the MINGO platform to ensure price caps and royalties are enforced. Tickets can't be resold on external secondary marketplaces (which is a feature, not a bug — it's how we prevent scalping).</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technology -->
+            <div class="category-section" data-category="technology">
+                <div class="category-title">Technology</div>
+                
+                <div class="faq-item" data-search="hedera blockchain network distributed ledger">
+                    <div class="faq-question">
+                        What is Hedera?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Hedera is a public distributed ledger (similar to blockchain) governed by major global enterprises including Google, IBM, Boeing, Deutsche Telekom, and LG. It processes over 10,000 transactions per second with sub-second finality. It's carbon negative. It's the infrastructure that powers MINGO's ticket verification.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="understand blockchain technical knowledge required">
+                    <div class="faq-question">
+                        Do I need to understand blockchain to use MINGO?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No. You create events and sell tickets through a normal web interface. The blockchain works behind the scenes.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="data privacy gdpr security personal information">
+                    <div class="faq-question">
+                        What about data privacy?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We comply with GDPR and relevant data protection regulations. Customer data is handled securely. The blockchain stores ticket verification data, not personal information.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="internet down offline network venue">
+                    <div class="faq-question">
+                        What happens if the internet goes down at my venue?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The scanning system has offline capabilities for temporary network interruptions. For extended outages, we have contingency protocols. Contact us for venue-specific setup guidance.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business -->
+            <div class="category-section" data-category="business">
+                <div class="category-title">Business</div>
+                
+                <div class="faq-item" data-search="contract lock-in period cancel commitment">
+                    <div class="faq-question">
+                        Is there a contract or lock-in period?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No contracts. No lock-in. Use MINGO for one event or a hundred. Cancel anytime.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="receive revenue payment payout settlement">
+                    <div class="faq-question">
+                        How do I receive my ticket revenue?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Revenue is settled to your bank account. Settlement terms depend on your agreement — typically within a few business days after the event.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="use alongside another platform mix multiple">
+                    <div class="faq-question">
+                        Can I use MINGO alongside another ticketing platform?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes. You can run some events on MINGO and others elsewhere. No exclusivity required.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="white-label solutions custom branding customisation">
+                    <div class="faq-question">
+                        Do you offer white-label solutions?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Contact us to discuss customisation options for larger clients. Email: cillian@mingoapps.com</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="where available countries regions international">
+                    <div class="faq-question">
+                        Where is MINGO available?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Currently live in 54 countries across 4 continents. If you can sell a ticket, we can process it.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="existing clients customers portfolio case studies">
+                    <div class="faq-question">
+                        Who are your existing clients?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We work with the World Boxing Council, Fight Circus, African Boxing League, Comic-Con Ireland, Goldstar Promotions, Napster AI, and event organisers across 54 countries — spanning combat sports, entertainment, music, and more.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Getting Started -->
+            <div class="category-section" data-category="getting-started">
+                <div class="category-title">Getting Started</div>
+                
+                <div class="faq-item" data-search="sign up register create account start">
+                    <div class="faq-question">
+                        How do I sign up?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Head to tickets.mingo.com and create an organiser account. It's free to set up.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="demo walkthrough see preview test">
+                    <div class="faq-question">
+                        Can I see a demo first?
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely. Email cillian@mingoapps.com or DM us on X (@mingoapps) and we'll walk you through it.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-search="more questions contact support help">
+                    <div class="faq-question">
+                        I have more questions.
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Email:</strong> cillian@mingoapps.com</p>
+                        <p><strong>X:</strong> @mingoapps</p>
+                        <p><strong>Website:</strong> tickets.mingo.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults">
+            No questions found. Try a different search or category.
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <div class="cta-title">Ready to Transform Your Ticketing?</div>
+            <div class="cta-text">Join event organisers across 54 countries who are saving money and fighting scalpers with MINGO.</div>
+            <div class="cta-buttons">
+                <a href="https://tickets.mingo.com" class="cta-btn cta-btn-primary" target="_blank">Get Started Free</a>
+                <a href="mailto:cillian@mingoapps.com" class="cta-btn cta-btn-secondary">Contact Us</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle FAQ items
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                const wasActive = item.classList.contains('active');
+                
+                // Optional: Close other items when opening a new one
+                // document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                
+                if (wasActive) {
+                    item.classList.remove('active');
+                } else {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Category filters
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const sections = document.querySelectorAll('.category-section');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.dataset.category;
+                
+                // Update active button
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Show/hide sections
+                if (category === 'all') {
+                    sections.forEach(section => section.classList.remove('hidden'));
+                } else {
+                    sections.forEach(section => {
+                        if (section.dataset.category === category) {
+                            section.classList.remove('hidden');
+                        } else {
+                            section.classList.add('hidden');
+                        }
+                    });
+                }
+                
+                // Clear search
+                document.getElementById('searchBox').value = '';
+                checkResults();
+            });
+        });
+
+        // Search functionality
+        const searchBox = document.getElementById('searchBox');
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        searchBox.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            let visibleCount = 0;
+            
+            // Reset category filter to "all" when searching
+            if (searchTerm) {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                filterBtns[0].classList.add('active'); // "All" button
+                sections.forEach(section => section.classList.remove('hidden'));
+            }
+            
+            faqItems.forEach(item => {
+                const searchData = item.dataset.search.toLowerCase();
+                const questionText = item.querySelector('.faq-question').textContent.toLowerCase();
+                const answerText = item.querySelector('.faq-answer').textContent.toLowerCase();
+                
+                if (searchTerm === '' || 
+                    searchData.includes(searchTerm) || 
+                    questionText.includes(searchTerm) || 
+                    answerText.includes(searchTerm)) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    item.classList.add('hidden');
+                    item.classList.remove('active'); // Close hidden items
+                }
+            });
+            
+            checkResults();
+        });
+
+        // Check if any results are visible
+        function checkResults() {
+            const visibleItems = document.querySelectorAll('.faq-item:not(.hidden)');
+            const noResults = document.getElementById('noResults');
+            
+            if (visibleItems.length === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

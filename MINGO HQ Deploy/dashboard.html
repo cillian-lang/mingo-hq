@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINGO HQ</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.topbar { background: #111; border-bottom: 1px solid #222; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+.logo { font-size: 24px; font-weight: 800; color: #45B75F; letter-spacing: -0.5px; }
+.logo span { color: #888; font-weight: 400; font-size: 14px; margin-left: 10px; }
+.nav { display: flex; gap: 8px; }
+.nav a { color: #aaa; text-decoration: none; font-size: 13px; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; border: 1px solid transparent; }
+.nav a:hover, .nav a.active { color: #45B75F; background: #1a2a1a; border-color: #2a3a2a; }
+.container { max-width: 1200px; margin: 0 auto; padding: 32px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Home page */
+.hero { text-align: center; padding: 40px 0 30px; }
+.hero h1 { font-size: 36px; color: #fff; margin-bottom: 8px; }
+.hero p { color: #888; font-size: 16px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-top: 30px; }
+.card { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 24px; transition: all 0.2s; cursor: pointer; text-decoration: none; color: inherit; display: block; }
+.card:hover { border-color: #45B75F; background: #1a1a1a; transform: translateY(-2px); }
+.card-icon { font-size: 28px; margin-bottom: 12px; }
+.card-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.card-desc { font-size: 13px; color: #888; line-height: 1.5; }
+.card-meta { font-size: 11px; color: #555; margin-top: 12px; display: flex; gap: 12px; }
+.card-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; margin-top: 10px; }
+.badge-green { background: #1a2a1a; color: #45B75F; }
+.badge-blue { background: #1a1a2a; color: #6C9BF2; }
+.badge-orange { background: #2a1a1a; color: #F15F22; }
+.badge-purple { background: #2a1a2a; color: #C275E0; }
+.badge-teal { background: #1a2a2a; color: #42C9C2; }
+
+/* Doc viewer */
+.doc-viewer { background: #111; border: 1px solid #222; border-radius: 12px; padding: 32px; margin-top: 20px; }
+.doc-viewer h1 { color: #45B75F; font-size: 24px; margin-bottom: 20px; }
+.doc-content { font-size: 14px; line-height: 1.8; color: #ccc; white-space: pre-wrap; word-wrap: break-word; }
+.doc-content h1, .doc-content h2, .doc-content h3 { color: #45B75F; margin: 20px 0 10px; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; color: #888; text-decoration: none; font-size: 13px; padding: 6px 12px; border-radius: 6px; border: 1px solid #333; transition: all 0.2s; margin-bottom: 16px; }
+.back-btn:hover { color: #45B75F; border-color: #45B75F; }
+.section-title { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin: 30px 0 16px; }
+.telegraph-link { color: #45B75F; text-decoration: none; font-size: 12px; margin-left: 8px; }
+.telegraph-link:hover { text-decoration: underline; }
+
+/* Stats */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 30px; }
+.stat-card { background: #141414; border: 1px solid #222; border-radius: 10px; padding: 16px; text-align: center; }
+.stat-num { font-size: 28px; font-weight: 800; color: #45B75F; }
+.stat-label { font-size: 11px; color: #888; margin-top: 4px; }
+
+/* Loading */
+.loading { text-align: center; padding: 60px; color: #555; }
+.loading-spinner { display: inline-block; width: 24px; height: 24px; border: 2px solid #333; border-top-color: #45B75F; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">🎟️ MINGO HQ <span>Content & Strategy Dashboard</span></div>
+  <div class="nav">
+    <a href="#" onclick="showPage('home')" class="active" id="nav-home">Home</a>
+    <a href="#" onclick="showPage('calendar')" id="nav-calendar">Calendar</a>
+    <a href="#" onclick="showPage('docs')" id="nav-docs">Documents</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <h1>MINGO Content HQ ⚡</h1>
+      <p>Everything in one place. Click any card to view.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">84</div><div class="stat-label">Tweets Planned</div></div>
+      <div class="stat-card"><div class="stat-num">32</div><div class="stat-label">LinkedIn Posts</div></div>
+      <div class="stat-card"><div class="stat-num">28</div><div class="stat-label">Days Scheduled</div></div>
+      <div class="stat-card"><div class="stat-num">20</div><div class="stat-label">Documents</div></div>
+    </div>
+
+    <div class="section-title">📅 Content</div>
+    <div class="cards">
+      <a class="card" onclick="showPage('calendar')">
+        <div class="card-icon">📅</div>
+        <div class="card-title">Content Calendar</div>
+        <div class="card-desc">28-day plan (Feb 13 – Mar 12). 3 tweets/day + LinkedIn Mon & Fri. Click any day to expand content with copy buttons.</div>
+        <div class="card-meta"><span>84 tweets</span><span>32 LinkedIn posts</span><span>5 content pillars</span></div>
+        <span class="card-badge badge-green">Interactive</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-TWITTER-DRAFTS-V2.md')">
+        <div class="card-icon">🐦</div>
+        <div class="card-title">Twitter Drafts V2</div>
+        <div class="card-desc">20 tweet drafts under 280 characters. Across 5 content pillars: Problem/Solution, Hedera, Partnerships, Education, Engagement.</div>
+        <span class="card-badge badge-blue">280 char max</span>
+        <a class="telegraph-link" href="https://telegra.ph/MINGO--Twitter-Drafts-V2-280-char-02-11" target="_blank">Telegraph ↗</a>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-LINKEDIN-POSTS.md')">
+        <div class="card-icon">💼</div>
+        <div class="card-title">LinkedIn Posts</div>
+        <div class="card-desc">40 posts — 10 each for Joe (CEO), Deirdre (President), Cillian (Marketing), Jason (COO). Tone-matched per person.</div>
+        <span class="card-badge badge-blue">40 posts</span>
+        <a class="telegraph-link" href="https://telegra.ph/MINGO--LinkedIn-Posts-All-40-02-11" target="_blank">Telegraph ↗</a>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-WEEK1-CHECKLIST.md')">
+        <div class="card-icon">✅</div>
+        <div class="card-title">Week 1 Execution Checklist</div>
+        <div class="card-desc">Day-by-day checklist for Feb 13-19. Every tweet, LinkedIn post, and engagement task mapped out with posting times.</div>
+        <span class="card-badge badge-green">Action Plan</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-VERTICAL-CONTENT.md')">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Multi-Vertical Content</div>
+        <div class="card-desc">Tweets + LinkedIn posts targeting music, comedy, theatre, sports, conferences, charity, nightlife, food events. MINGO works for everything.</div>
+        <span class="card-badge badge-teal">20 tweets + 4 LinkedIn</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-HEDERA-MOMENTUM-TWEETS.md')">
+        <div class="card-icon">🔥</div>
+        <div class="card-title">Hedera Momentum Tweets</div>
+        <div class="card-desc">10 timely tweets capitalizing on Feb 2026 Hedera buzz — AUDD, Archax/BlackRock, RWA rankings, 71B transactions, central bank forum.</div>
+        <span class="card-badge badge-orange">Timely</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-THREAD-SCRIPTS.md')">
+        <div class="card-icon">🧵</div>
+        <div class="card-title">X Thread Scripts</div>
+        <div class="card-desc">4 ready-to-post threads: "Why Hedera", "Ticketing is Broken", "How MINGO Tickets Work", "February 2026 Hedera Month". 6-8 tweets each.</div>
+        <span class="card-badge badge-purple">4 threads</span>
+      </a>
+    </div>
+
+    <div class="section-title">📊 Strategy & Research</div>
+    <div class="cards">
+      <a class="card" onclick="loadDoc('MINGO-DEEP-DIVE.md')">
+        <div class="card-icon">🔬</div>
+        <div class="card-title">MINGO Deep Dive</div>
+        <div class="card-desc">Complete reference doc: product, team, tokenomics, Hedera integration, partnerships, social audit, messaging angles, competitive landscape.</div>
+        <span class="card-badge badge-purple">Reference</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-COMPETITIVE-RESEARCH.md')">
+        <div class="card-icon">⚔️</div>
+        <div class="card-title">Competitive Research</div>
+        <div class="card-desc">Full Web2 + Web3 competitor analysis. 18 competitors — features, fees, geography, where MINGO wins, and where we're lacking.</div>
+        <span class="card-badge badge-orange">18 Competitors</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-MARKETING-IDEAS.md')">
+        <div class="card-icon">💡</div>
+        <div class="card-title">Marketing Ideas</div>
+        <div class="card-desc">15 strategic recommendations prioritized by impact. Growth tactics, community building, partnership strategies.</div>
+        <span class="card-badge badge-teal">15 ideas</span>
+        <a class="telegraph-link" href="https://telegra.ph/MINGO--Marketing-Ideas--Recommendations-02-11" target="_blank">Telegraph ↗</a>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-HEDERA-ENGAGEMENT-MAP.md')">
+        <div class="card-icon">🗺️</div>
+        <div class="card-title">Hedera Engagement Map</div>
+        <div class="card-desc">Daily engagement playbook. Tier 1/2/3 accounts to interact with, templates, hashtags, weekly content rhythm.</div>
+        <span class="card-badge badge-blue">Playbook</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-OUTREACH-TEMPLATES.md')">
+        <div class="card-icon">📧</div>
+        <div class="card-title">Outreach Email Templates</div>
+        <div class="card-desc">Ready-to-send email templates for music venues, comedy, conferences, charity, nightlife, sports clubs. Personalise and send.</div>
+        <span class="card-badge badge-orange">7 templates</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-BRAND-VOICE-GUIDE.md')">
+        <div class="card-icon">🎨</div>
+        <div class="card-title">Brand Voice & Style Guide</div>
+        <div class="card-desc">Voice characteristics, tone per platform, team voice profiles, key phrases to use/avoid, visual style, content rules.</div>
+        <span class="card-badge badge-purple">Style Guide</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-SOCIAL-OPTIMIZATION.md')">
+        <div class="card-icon">📱</div>
+        <div class="card-title">Social Media Optimization</div>
+        <div class="card-desc">X bio options, pinned post strategy, LinkedIn profile recs for all 4 team members, engagement strategy, content ratio.</div>
+        <span class="card-badge badge-teal">Quick Wins</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-IRISH-PROSPECTS.md')">
+        <div class="card-icon">🇮🇪</div>
+        <div class="card-title">Irish Prospects Database</div>
+        <div class="card-desc">50+ Irish venues, promoters, and organisers across music, comedy, theatre, sports, conferences, nightlife. Sales pipeline.</div>
+        <span class="card-badge badge-green">Pipeline</span>
+      </a>
+    </div>
+
+    <div class="section-title">🔗 Telegraph Links (Shareable)</div>
+    <div class="cards">
+      <a class="card" href="https://telegra.ph/MINGO--Content-Hub-02-11" target="_blank">
+        <div class="card-icon">🗂️</div>
+        <div class="card-title">Content Hub</div>
+        <div class="card-desc">Central index linking all content materials. Shareable link — send to the team.</div>
+        <span class="card-badge badge-green">Telegraph ↗</span>
+      </a>
+      <a class="card" href="https://telegra.ph/MINGO--Twitter-Drafts-V2-280-char-02-11" target="_blank">
+        <div class="card-icon">🐦</div>
+        <div class="card-title">Twitter Drafts V2</div>
+        <div class="card-desc">20 tweets under 280 chars across 5 content pillars.</div>
+        <span class="card-badge badge-blue">Telegraph ↗</span>
+      </a>
+      <a class="card" href="https://telegra.ph/MINGO--LinkedIn-Posts-All-40-02-11" target="_blank">
+        <div class="card-icon">💼</div>
+        <div class="card-title">LinkedIn Posts (40)</div>
+        <div class="card-desc">10 each for Joe, Deirdre, Cillian, Jason. Tone-matched.</div>
+        <span class="card-badge badge-blue">Telegraph ↗</span>
+      </a>
+      <a class="card" href="https://telegra.ph/MINGO--Marketing-Ideas--Recommendations-02-11" target="_blank">
+        <div class="card-icon">💡</div>
+        <div class="card-title">Marketing Ideas & Recommendations</div>
+        <div class="card-desc">15 strategic recommendations prioritized by impact.</div>
+        <span class="card-badge badge-teal">Telegraph ↗</span>
+      </a>
+      <a class="card" href="https://telegra.ph/MINGO--Social-Content-Drafts-02-11" target="_blank">
+        <div class="card-icon">📝</div>
+        <div class="card-title">Content Drafts V1</div>
+        <div class="card-desc">Original social content drafts. Superseded by V2 but kept for reference.</div>
+        <span class="card-badge badge-purple">Telegraph ↗</span>
+      </a>
+      <a class="card" href="https://telegra.ph/MINGO--Pinned-Post--Content-Calendar-02-11" target="_blank">
+        <div class="card-icon">📌</div>
+        <div class="card-title">Pinned Post Options + Calendar</div>
+        <div class="card-desc">3 pinned post options (A, B, C) and the original 4-week content calendar outline.</div>
+        <span class="card-badge badge-orange">Telegraph ↗</span>
+      </a>
+    </div>
+
+    <div class="section-title">📝 Other Documents</div>
+    <div class="cards">
+      <a class="card" onclick="loadDoc('MINGO-CONTENT-HUB.md')">
+        <div class="card-icon">🗂️</div>
+        <div class="card-title">Content Hub (Local)</div>
+        <div class="card-desc">Local copy of the content hub index.</div>
+        <span class="card-badge badge-green">Markdown</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-CONTENT-CALENDAR.md')">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Content Calendar (Raw)</div>
+        <div class="card-desc">Full calendar in markdown format with all tweets and LinkedIn posts. Same content as the interactive calendar.</div>
+        <span class="card-badge badge-green">Markdown</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-TWEET-DRAFTS.md')">
+        <div class="card-icon">📝</div>
+        <div class="card-title">Tweet Drafts V1 (Local)</div>
+        <div class="card-desc">Original 15 tweet drafts. Superseded by V2 but kept for reference.</div>
+        <span class="card-badge badge-purple">Archive</span>
+      </a>
+      <a class="card" onclick="loadDoc('BYBIT-EMAIL-DRAFT.md')">
+        <div class="card-icon">✉️</div>
+        <div class="card-title">Bybit Email Draft</div>
+        <div class="card-desc">Support email requesting 2021-2023 account statements. Ready to review and send.</div>
+        <span class="card-badge badge-orange">Action Needed</span>
+      </a>
+      <a class="card" onclick="loadDoc('morning-brief-2026-02-12.md')">
+        <div class="card-icon">🌅</div>
+        <div class="card-title">Morning Brief</div>
+        <div class="card-desc">Feb 12 morning brief — weather, crypto prices, Hedera news, to-do list.</div>
+        <span class="card-badge badge-teal">Daily</span>
+      </a>
+    </div>
+
+    <div class="section-title">🛠️ Sales Tools</div>
+    <div class="cards">
+      <a class="card" href="fee-calculator.html" target="_blank">
+        <div class="card-icon">🧮</div>
+        <div class="card-title">Fee Comparison Calculator</div>
+        <div class="card-desc">Interactive calculator — enter ticket price and quantity, see savings vs legacy platforms. Share with potential organizers.</div>
+        <span class="card-badge badge-green">Interactive</span>
+      </a>
+      <a class="card" href="organizer-pitch.html" target="_blank">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Organizer Pitch Page</div>
+        <div class="card-desc">Professional one-pager for event organizers. The problem, MINGO's solution, fee comparison, social proof, CTA.</div>
+        <span class="card-badge badge-green">Sales Tool</span>
+      </a>
+      <a class="card" href="faq.html" target="_blank">
+        <div class="card-icon">❓</div>
+        <div class="card-title">Organizer FAQ</div>
+        <div class="card-desc">Interactive FAQ with search and filters. Every question an organizer would ask — fees, security, resale, tech, getting started.</div>
+        <span class="card-badge badge-green">Sales Tool</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-ORGANIZER-FAQ.md')">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Organizer FAQ (Raw)</div>
+        <div class="card-desc">FAQ content in markdown format. Same content as the interactive FAQ page.</div>
+        <span class="card-badge badge-purple">Markdown</span>
+      </a>
+      <a class="card" onclick="loadDoc('MINGO-VS-LEGACY.md')">
+        <div class="card-icon">⚖️</div>
+        <div class="card-title">MINGO vs Legacy — Side by Side</div>
+        <div class="card-desc">15-category comparison with honest scoring. Where we win (9), where they win (6). Real fee savings by event size.</div>
+        <span class="card-badge badge-orange">Comparison</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- CALENDAR PAGE -->
+  <div class="page" id="page-calendar">
+    <a class="back-btn" onclick="showPage('home')">← Back to HQ</a>
+    <iframe id="calendar-frame" src="content-calendar.html" style="width:100%;height:calc(100vh - 140px);border:none;border-radius:12px;"></iframe>
+  </div>
+
+  <!-- DOCS PAGE -->
+  <div class="page" id="page-docs">
+    <a class="back-btn" onclick="showPage('home')">← Back to HQ</a>
+    <div id="doc-container">
+      <div class="loading"><div class="loading-spinner"></div><br>Select a document from the home page</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const docFiles = [
+  'MINGO-DEEP-DIVE.md','MINGO-TWITTER-DRAFTS-V2.md','MINGO-LINKEDIN-POSTS.md',
+  'MINGO-CONTENT-CALENDAR.md','MINGO-CONTENT-HUB.md','MINGO-MARKETING-IDEAS.md',
+  'MINGO-TWEET-DRAFTS.md','MINGO-COMPETITIVE-RESEARCH.md','BYBIT-EMAIL-DRAFT.md',
+  'morning-brief-2026-02-12.md'
+];
+
+document.getElementById('doc-count').textContent = docFiles.length;
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+}
+
+function loadDoc(filename) {
+  showPage('docs');
+  const container = document.getElementById('doc-container');
+  container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><br>Loading ' + filename + '...</div>';
+  
+  fetch(filename)
+    .then(r => {
+      if (!r.ok) throw new Error('File not found');
+      return r.text();
+    })
+    .then(text => {
+      // Simple markdown rendering
+      let html = text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #333;margin:20px 0">')
+        .replace(/^- (.+)$/gm, '• $1');
+      
+      container.innerHTML = `
+        <div class="doc-viewer">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h1 style="margin:0">${filename}</h1>
+            <button onclick="copyDoc()" style="background:#222;border:1px solid #333;color:#aaa;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;">Copy All</button>
+          </div>
+          <div class="doc-content" id="doc-text">${html}</div>
+        </div>`;
+      window._docRawText = text;
+    })
+    .catch(err => {
+      container.innerHTML = `<div class="doc-viewer"><h1>⏳ ${filename}</h1><p style="color:#888;margin-top:12px;">This document is still being generated. Check back shortly.</p></div>`;
+    });
+}
+
+function copyDoc() {
+  if (window._docRawText) {
+    navigator.clipboard.writeText(window._docRawText).then(() => {
+      const btn = event.target;
+      btn.textContent = 'Copied!';
+      btn.style.background = '#45B75F';
+      btn.style.color = '#000';
+      setTimeout(() => { btn.textContent = 'Copy All'; btn.style.background = '#222'; btn.style.color = '#aaa'; }, 1500);
+    });
+  }
+}
+</script>
+</body>
+</html>

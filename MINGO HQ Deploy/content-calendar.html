@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINGO Content Calendar</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 20px; }
+h1 { color: #45B75F; font-size: 28px; margin-bottom: 4px; }
+.subtitle { color: #888; font-size: 14px; margin-bottom: 20px; }
+.legend { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #aaa; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.week-header { color: #45B75F; font-size: 18px; font-weight: 700; margin: 24px 0 12px 0; border-bottom: 1px solid #222; padding-bottom: 6px; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 8px; }
+.day-label { text-align: center; font-size: 11px; color: #666; text-transform: uppercase; font-weight: 600; padding: 4px; }
+.day-card { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 10px; min-height: 80px; cursor: pointer; transition: all 0.2s; position: relative; }
+.day-card:hover { border-color: #45B75F; background: #1a1a1a; }
+.day-card.active { border-color: #45B75F; background: #1a2a1a; }
+.day-card.linkedin { border-left: 3px solid #0A66C2; }
+.day-card.empty { background: transparent; border-color: transparent; cursor: default; min-height: 0; }
+.day-card.empty:hover { border-color: transparent; background: transparent; }
+.day-num { font-size: 16px; font-weight: 700; color: #fff; }
+.day-name { font-size: 10px; color: #666; text-transform: uppercase; }
+.day-badges { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.badge { font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 600; }
+.badge-gm { background: #2a2a1a; color: #F5C542; }
+.badge-p1 { background: #2a1a1a; color: #F15F22; }
+.badge-p2 { background: #1a1a2a; color: #6C9BF2; }
+.badge-p3 { background: #1a2a1a; color: #45B75F; }
+.badge-p4 { background: #2a1a2a; color: #C275E0; }
+.badge-p5 { background: #1a2a2a; color: #42C9C2; }
+.badge-li { background: #0A66C2; color: #fff; }
+.detail-panel { background: #141414; border: 1px solid #2a2a2a; border-radius: 12px; padding: 24px; margin-top: 16px; display: none; }
+.detail-panel.show { display: block; }
+.detail-date { font-size: 20px; font-weight: 700; color: #45B75F; margin-bottom: 16px; }
+.tweet-block { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 14px; margin-bottom: 10px; }
+.tweet-label { font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+.tweet-label.gm { color: #F5C542; }
+.tweet-label.p1 { color: #F15F22; }
+.tweet-label.p2 { color: #6C9BF2; }
+.tweet-label.p3 { color: #45B75F; }
+.tweet-label.p4 { color: #C275E0; }
+.tweet-label.p5 { color: #42C9C2; }
+.tweet-text { font-size: 14px; line-height: 1.5; color: #ddd; white-space: pre-wrap; }
+.tweet-chars { font-size: 10px; color: #555; margin-top: 4px; text-align: right; }
+.linkedin-section { margin-top: 16px; border-top: 1px solid #222; padding-top: 16px; }
+.linkedin-title { font-size: 14px; font-weight: 700; color: #0A66C2; margin-bottom: 12px; }
+.li-post { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 14px; margin-bottom: 10px; }
+.li-name { font-size: 12px; font-weight: 700; color: #0A66C2; margin-bottom: 4px; }
+.li-role { font-size: 10px; color: #666; margin-bottom: 8px; }
+.li-text { font-size: 13px; line-height: 1.5; color: #ccc; white-space: pre-wrap; }
+.copy-btn { background: #222; border: 1px solid #333; color: #aaa; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer; float: right; transition: all 0.2s; }
+.copy-btn:hover { background: #45B75F; color: #000; border-color: #45B75F; }
+.copy-btn.copied { background: #45B75F; color: #000; border-color: #45B75F; }
+.stats-bar { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+.stat { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 12px 18px; }
+.stat-num { font-size: 22px; font-weight: 700; color: #45B75F; }
+.stat-label { font-size: 11px; color: #888; }
+</style>
+</head>
+<body>
+
+<h1>🎟️ MINGO Content Calendar</h1>
+<p class="subtitle">Feb 13 – Mar 12, 2026 • 3 tweets/day + LinkedIn Mon & Fri</p>
+
+<div class="stats-bar">
+<div class="stat"><div class="stat-num">84</div><div class="stat-label">Total Tweets</div></div>
+<div class="stat"><div class="stat-num">32</div><div class="stat-label">LinkedIn Posts</div></div>
+<div class="stat"><div class="stat-num">28</div><div class="stat-label">Days Planned</div></div>
+<div class="stat"><div class="stat-num">8</div><div class="stat-label">LinkedIn Days</div></div>
+</div>
+
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#F5C542"></div>GM</div>
+<div class="legend-item"><div class="legend-dot" style="background:#F15F22"></div>Problem/Solution</div>
+<div class="legend-item"><div class="legend-dot" style="background:#6C9BF2"></div>Hedera</div>
+<div class="legend-item"><div class="legend-dot" style="background:#45B75F"></div>Partnerships</div>
+<div class="legend-item"><div class="legend-dot" style="background:#C275E0"></div>Education</div>
+<div class="legend-item"><div class="legend-dot" style="background:#42C9C2"></div>Engagement</div>
+<div class="legend-item"><div class="legend-dot" style="background:#0A66C2"></div>LinkedIn Day</div>
+</div>
+
+<div id="calendar"></div>
+<div id="detail" class="detail-panel"></div>
+
+<script>
+const days = [
+{date:"2026-02-13",dow:"Thu",gm:"gm to everyone except ticketing platforms still charging 25%+ in fees ☀️",t2:{p:"P1",text:"Legacy ticketing platforms charge up to 27% in fees on your ticket.\n\nWe charge 3.5%.\n\nThat's not a typo. That's @mingoapps on @hedera. 🎟️"},t3:{p:"P2",text:"Why did we build on @hedera?\n\n⚡ Sub-second finality\n💰 Predictable low fees\n🏢 Governed by Google, IBM, Boeing\n🌱 Carbon negative\n\nWhen you're scanning 10,000 tickets at a venue door, speed isn't optional."}},
+{date:"2026-02-14",dow:"Fri",li:true,gm:"gm and happy Valentine's Day 💚 we love fair ticketing more than chocolate",t2:{p:"P3",text:"From the World Boxing Council to Fight Circus to the African Boxing League.\n\nCombat sports chose MINGO because fighters deserve better than legacy fees.\n\n3.5%. Verified. On-chain. 🥊"},t3:{p:"P5",text:"What annoys you MOST about buying event tickets?\n\n🔴 Hidden fees\n🟡 Scalper bots\n🟢 Fake tickets\n🔵 No refund options"},lip:[{name:"Joe Arthur",role:"CEO & Co-Founder",text:"The ticketing industry hasn't innovated in decades. Fans pay hidden fees. Artists lose revenue to scalpers. Organizers have no control over their own secondary market.\n\nWe built MINGO to fix this — blockchain ticketing on Hedera with 3.5% fees, built-in fraud prevention, and artist royalties on every resale.\n\nWe're now live in 54 countries. This isn't a roadmap. It's reality."},{name:"Deirdre Arthur",role:"Co-Founder & President",text:"When we started MINGO, people told us blockchain and live events didn't belong together.\n\nEight years later, we're processing tickets for the World Boxing Council, Fight Circus, and events across 54 countries.\n\nThe best ideas often sound impossible at first. Happy to still be proving people wrong."},{name:"Cillian Arthur",role:"Marketing Manager",text:"Happy Valentine's Day to everyone except hidden ticketing fees 💚\n\nReal talk though — the average fan pays 27% more than face value thanks to legacy platform surcharges. At MINGO we've cut that to 3.5%.\n\nWhen your ticketing platform is built on Hedera, efficiency isn't a feature — it's the foundation."},{name:"Jason Teji",role:"COO",text:"The operations side of blockchain ticketing is where it gets interesting.\n\nEvery ticket on MINGO is an NFT on Hedera — verified at the gate in under a second, impossible to counterfeit, with resale controls baked in at the smart contract level.\n\nThis isn't theoretical. We process real events, real crowds, real volume. The infrastructure is live."}]},
+{date:"2026-02-15",dow:"Sat",gm:"gm 🌍 another day building the future of live events",t2:{p:"P4",text:"\"But I don't understand crypto...\"\n\nYou don't need to.\n\nSign up with email. Buy tickets with your card. Get a QR code.\n\nThe blockchain part happens invisibly. That's the whole point. 🎯"},t3:{p:"P1",text:"The secondary ticket market is worth $6.58B.\n\nOrganizers and artists see $0 of that on legacy platforms.\n\nWith MINGO, they earn royalties on every resale. Automatically. On-chain."}},
+{date:"2026-02-16",dow:"Sun",gm:"gm builders. sunday reset, monday we go again ⚡",t2:{p:"P2",text:"@hedera processes 10,000+ TPS with sub-second finality.\n\nThat means your ticket gets verified at the gate faster than you can pull out your phone.\n\nThis is why we build here. ⚡"},t3:{p:"P5",text:"If event organizers could save 80% on ticketing fees AND eliminate fraud...\n\nWhy wouldn't they?\n\nAsking for @mingoapps. 👀"}},
+{date:"2026-02-17",dow:"Mon",li:true,gm:"gm. new week. new events going on-chain 🎟️",t2:{p:"P3",text:"MINGO just expanded to 54 countries.\n\nNot a roadmap promise. Not \"coming soon.\"\n\nLive. Now. Ticketing events across 4 continents.\n\nBuilt on @hedera. 🌍"},t3:{p:"P1",text:"10,000 seat venue. $75 tickets.\n\nWith legacy platforms: $202,500 in fees.\nWith MINGO: $26,250 in fees.\n\nThat's $176,250 back in the organizer's pocket. Every. Single. Event."},lip:[{name:"Joe Arthur",role:"CEO & Co-Founder",text:"One number changed everything for us: 3.5%.\n\nThat's what MINGO charges for ticketing. The industry average sits between 15-27%.\n\nWhen we showed event organizers they could keep an extra $176,000 on a 10,000-seat event, the conversations shifted fast.\n\nBlockchain isn't just better tech — it's better economics."},{name:"Deirdre Arthur",role:"Co-Founder & President",text:"Growing MINGO from an idea to a platform operating in 54 countries has been the challenge of a lifetime.\n\nEvery country brings different regulations, payment systems, and cultural expectations. But the core problem is universal: fans pay too much, and organizers lose control.\n\nThat's what keeps us pushing forward."},{name:"Cillian Arthur",role:"Marketing Manager",text:"Monday math:\n\n10,000 seats × $75 = $750,000\nLegacy platform fees (27%): $202,500\nMINGO fees (3.5%): $26,250\nDifference: $176,250 per event\n\nWhen you put the numbers side by side, it's hard to argue with blockchain ticketing. We're not disrupting for the sake of it — we're just making the economics work."},{name:"Jason Teji",role:"COO",text:"We hit 54 countries this year.\n\nOperationally, that means integrating with local payment rails, managing compliance across jurisdictions, and ensuring sub-second ticket verification regardless of location.\n\nHedera's infrastructure makes this possible at scale. The hard part isn't the blockchain — it's everything around it."}]},
+{date:"2026-02-18",dow:"Tue",gm:"gm. every ticket sold today on legacy platforms could've been cheaper on MINGO ☕",t2:{p:"P4",text:"No app download. No crypto wallet setup. No seed phrases.\n\nMINGO runs in your browser. Works on any phone. Takes 30 seconds to start.\n\nWeb3 shouldn't feel like homework. 📱"},t3:{p:"P2",text:"@hedera's governing council includes Google, IBM, Boeing, LG, and Deutsche Telekom.\n\nThat's not a crypto project. That's enterprise infrastructure.\n\nAnd it's what powers every @mingoapps ticket. 🎟️"}},
+{date:"2026-02-19",dow:"Wed",gm:"gm from the team that's been building on @hedera since 2018 ☀️",t2:{p:"P5",text:"Hot take: Legacy ticketing's biggest moat isn't the tech. It's that organizers don't know there's an alternative.\n\nWe're changing that. One event at a time. @mingoapps 🎟️"},t3:{p:"P3",text:"The World Boxing Council trusts @mingoapps for digital ticketing.\n\nWhen the biggest name in boxing chooses blockchain over legacy platforms, you know the industry is shifting. 🏆"}},
+{date:"2026-02-20",dow:"Thu",gm:"gm. the ticketing monopoly is cracking and we've got the hammer 🔨",t2:{p:"P1",text:"12% of U.S. concert ticket buyers have been sold a fake ticket.\n\nEvery MINGO ticket is an NFT on @hedera — verified on-chain, impossible to counterfeit.\n\nNo more scams. ✅"},t3:{p:"P4",text:"Your MINGO ticket is an NFT. That means:\n\n✅ Can't be faked\n✅ Can't be duplicated\n✅ Resale is controlled\n✅ Artist earns from every resale\n✅ You own a digital collectible\n\nSame QR code. Infinite more value."}},
+{date:"2026-02-21",dow:"Fri",li:true,gm:"gm and happy friday 🎟️ who's got events this weekend?",t2:{p:"P2",text:"We've been building on @hedera since 2018.\n\nBefore the hype. Before the bull runs. Before most people knew what hashgraph was.\n\nReal builders ship. 🚢"},t3:{p:"P5",text:"Imagine buying a concert ticket and knowing: the price is fair, it can't be faked, and if you resell it the artist earns too.\n\nThat's not a fantasy. That's @mingoapps.\ntickets.mingo.com 🎟️"},lip:[{name:"Joe Arthur",role:"CEO & Co-Founder",text:"I've spent eight years watching the ticketing industry resist change. Legacy platforms have no incentive to lower fees — their business model depends on them.\n\nMINGO exists because we believe technology should serve fans and organizers, not extract from them. Hedera gives us the infrastructure. The market is giving us the opportunity."},{name:"Deirdre Arthur",role:"Co-Founder & President",text:"People often ask what keeps me motivated after eight years of building MINGO.\n\nIt's simple: every event organizer who switches to us and realizes they've been overpaying by 5-10x. That moment of realization — \"wait, it's really only 3.5%?\" — never gets old."},{name:"Cillian Arthur",role:"Marketing Manager",text:"If you went to an event this week, chances are you paid 15-27% in hidden fees on your ticket.\n\nMost people don't even notice — it's buried in \"service charges\" and \"processing fees.\"\n\nAt MINGO we show one price: face value + 3.5%. Transparency shouldn't be revolutionary, but here we are."},{name:"Jason Teji",role:"COO",text:"One of the most underappreciated aspects of blockchain ticketing is what happens after the primary sale.\n\nOn legacy platforms, resales happen on third-party marketplaces. Organizers and artists see nothing.\n\nOn MINGO, resale royalties are enforced at the smart contract level. Every resale, every time, automatically."}]},
+{date:"2026-02-22",dow:"Sat",gm:"gm weekend warriors ⚡ go see some live events",t2:{p:"P1",text:"Scalpers bought your ticket before you even opened the page.\n\nWith MINGO, organizers set resale price caps. Fans pay fair prices. Artists keep control.\n\nBlockchain-verified. Built on @hedera."},t3:{p:"P3",text:"Tyson Fury. The WBC. Fight Circus. African Boxing League. NUCA MMA. Yucateco Boxing.\n\nCombat sports are going on-chain with @mingoapps. Who's next? 🥊"}},
+{date:"2026-02-23",dow:"Sun",gm:"gm. rest day. but the blockchain never sleeps 🌙",t2:{p:"P4",text:"\"Isn't blockchain complicated?\"\n\nNot when we build it right. MINGO tickets work exactly like regular tickets — buy, scan, enter.\n\nThe difference? Yours can't be faked, and the artist actually gets paid on resale."},t3:{p:"P5",text:"The ticketing industry hasn't changed in 30 years. Same fees. Same scalping. Same fake tickets.\n\nWe're building the reset. @mingoapps on @hedera.\n\nWho's ready? 🎟️"}},
+{date:"2026-02-24",dow:"Mon",li:true,gm:"gm. monday again. let's move the needle 📈",t2:{p:"P2",text:"Hedera isn't just fast. It's governed by the world's biggest enterprises. Carbon negative. Built for scale.\n\nThat's not hype — it's why we chose it in 2018 and haven't looked back. @hedera ⚡"},t3:{p:"P1",text:"Event organizers: you're paying 15-27% of your ticket revenue to a platform that hasn't innovated since the 90s.\n\nMINGO charges 3.5%. Same tickets. Better tech. More money in your pocket.\ntickets.mingo.com"},lip:[{name:"Joe Arthur",role:"CEO & Co-Founder",text:"When we chose Hedera in 2018, people questioned why we didn't go with Ethereum or Solana.\n\nThe answer was simple: we needed enterprise-grade infrastructure that could handle real-world ticketing volume. Sub-second finality, predictable fees, and a governing council that includes Google and IBM.\n\nEight years later, that bet looks better every day."},{name:"Deirdre Arthur",role:"Co-Founder & President",text:"Something I've learned building MINGO: the best technology disappears.\n\nOur users don't know they're using blockchain. They buy a ticket, get a QR code, walk into an event. The fact that it's an NFT on Hedera? That's our problem to solve, not theirs.\n\nAnd that's exactly how it should be."},{name:"Cillian Arthur",role:"Marketing Manager",text:"Hot take: most \"Web3\" products fail because they lead with the tech instead of the problem.\n\nNobody wakes up wanting an NFT ticket. They wake up wanting to see their favourite artist without paying 27% in fees or worrying about fakes.\n\nLead with the problem. Let the tech be the answer. That's the MINGO approach."},{name:"Jason Teji",role:"COO",text:"Scaling blockchain ticketing across 54 countries means dealing with regulatory complexity most crypto projects never face.\n\nKYC requirements, consumer protection laws, payment processing regulations — all different by jurisdiction.\n\nHedera's enterprise positioning actually helps here. When you tell a regulator your infrastructure is governed by Google and IBM, the conversation changes."}]},
+{date:"2026-02-25",dow:"Tue",gm:"gm. friendly reminder that 3.5% > 27% (for your wallet, not ours) ☕",t2:{p:"P3",text:"Comic-Con Ireland. Napster AI. Goldstar Promotions.\n\nIt's not just combat sports — entertainment across the board is moving to @mingoapps.\n\n54 countries and growing. 🌍"},t3:{p:"P4",text:"Want to see what blockchain ticketing actually looks like?\n\ntickets.mingo.com\n\nNo crypto needed. No app download. Just better tickets. 🎟️"}},
+{date:"2026-02-26",dow:"Wed",gm:"gm to the builders, the dreamers, and the ones tired of paying service fees ⚡",t2:{p:"P5",text:"We don't just sell tickets. We're building the future of live events.\n\nIf you believe fans deserve fair pricing and artists deserve fair revenue — you're one of us.\n\nWelcome to MINGO. ⚡"},t3:{p:"P2",text:"Carbon negative blockchain. Enterprise governance. 10,000+ TPS. Sub-second finality.\n\n@hedera isn't the future of ticketing infrastructure. It's the present. And @mingoapps is proving it daily. 🌱"}},
+{date:"2026-02-27",dow:"Thu",gm:"gm 🎟️ another day, another event going on-chain",t2:{p:"P1",text:"The average event-goer doesn't know they're paying 27% in hidden fees. Service charges. Processing fees. Facility fees. It all adds up.\n\nMINGO: one transparent price. 3.5%. That's it."},t3:{p:"P3",text:"We're not waiting for adoption. We're creating it.\n\n@mingoapps is live, processing real tickets, for real events, in 54 countries.\n\nWhile others build roadmaps, we build revenue. 🚀"}},
+{date:"2026-02-28",dow:"Fri",li:true,gm:"gm friday crew. end the week strong 💪",t2:{p:"P4",text:"Your nan could buy a MINGO ticket. Seriously.\n\nEmail signup, card payment, QR code. Done.\n\nWe didn't build blockchain ticketing for crypto natives. We built it for everyone. 🎯"},t3:{p:"P5",text:"Quick poll for event organizers:\n\nWould you switch platforms if you could cut fees by 80% and eliminate ticket fraud?\n\n(We already know the answer.)\n@mingoapps 👀"},lip:[{name:"Joe Arthur",role:"CEO & Co-Founder",text:"The numbers tell the story. Legacy ticketing takes 15-27% from every transaction. MINGO takes 3.5%.\n\nOn a $750,000 gate, that's a $176,000 difference. Multiply that across a touring season and you understand why organizers are switching.\n\nThis isn't about blockchain ideology. It's about business sense."},{name:"Deirdre Arthur",role:"Co-Founder & President",text:"Eight years ago, if you told someone that Google, IBM, and Boeing would govern the blockchain powering event tickets, they'd have laughed.\n\nToday it's reality — and MINGO is built on exactly that infrastructure.\n\nThe line between \"emerging tech\" and \"enterprise standard\" is thinner than most people think."},{name:"Cillian Arthur",role:"Marketing Manager",text:"Every week I talk to event organizers who had no idea there was an alternative to legacy ticketing.\n\nThey've been paying 27% because they thought that was just... how it works.\n\nIt's not. 3.5% is how it works when your platform is built right. The education gap is closing fast."},{name:"Jason Teji",role:"COO",text:"One thing that separates MINGO from other blockchain ticketing projects: we've been live since 2018.\n\nNot in testnet. Not on devnet. In production, processing real tickets for real events.\n\nThere's a massive gap between a demo and a platform handling thousands of concurrent scans at a venue gate. We've crossed it."}]},
+{date:"2026-03-01",dow:"Sat",gm:"gm march. new month, new milestones loading ⚡",t2:{p:"P2",text:"Every MINGO ticket is minted on @hedera. That means it inherits: enterprise governance, carbon negativity, sub-second speed, and rock-bottom fees.\n\nYour ticket is powered by the same network trusted by Fortune 500s."},t3:{p:"P1",text:"Artist drops an album → streams it → earns fractions of a cent.\nArtist does a show → sells tickets → loses 27% to the platform.\n\nThe live events economy is broken. MINGO is the fix. 🎵"}},
+{date:"2026-03-02",dow:"Sun",gm:"gm. lazy sunday but the smart contracts are still working 🌙",t2:{p:"P5",text:"Name one reason fans should pay 27% in hidden fees on event tickets in 2026.\n\nWe'll wait.\n\n@mingoapps charges 3.5%. Built on @hedera. 🎟️"},t3:{p:"P4",text:"\"What happens if I lose my phone?\"\n\nYour MINGO ticket is tied to your account, not your device. Log in anywhere, ticket's there.\n\nBlockchain-backed, cloud-synced, stress-free. ✅"}},
+{date:"2026-03-03",dow:"Mon",li:true,gm:"gm monday. this week we're pushing harder than last week 📈",t2:{p:"P3",text:"The partnership pipeline is growing. Every week, new organizers discover that blockchain ticketing isn't just possible — it's better.\n\nWelcome to the movement. @mingoapps 🎟️"},t3:{p:"P1",text:"Legacy ticketing platforms charge you to print your own ticket. Let that sink in.\n\nMINGO: 3.5%. All-in. No surprises.\ntickets.mingo.com"},lip:[{name:"Joe Arthur",role:"CEO & Co-Founder",text:"A question I get asked often: \"Why haven't the big players adopted blockchain ticketing?\"\n\nThe answer is simple — their business model depends on high fees. A 27% take rate doesn't survive transparency.\n\nWhen fans can see what ticketing actually costs, the whole model collapses. That's what MINGO represents."},{name:"Deirdre Arthur",role:"Co-Founder & President",text:"Building a company across 54 countries means navigating different cultures, regulations, and expectations every single day.\n\nBut the one thing that's universal? Nobody likes being overcharged.\n\nThat's why MINGO's message lands everywhere we go. Fair pricing is a global language."},{name:"Cillian Arthur",role:"Marketing Manager",text:"March content plan: more organizer case studies, more fee comparisons, more proof that blockchain ticketing isn't coming — it's here.\n\nThe narrative is shifting from \"interesting experiment\" to \"why aren't you using this yet?\" and we're here to accelerate it."},{name:"Jason Teji",role:"COO",text:"The technical moat in blockchain ticketing isn't the blockchain itself — it's the full-stack integration.\n\nPayment processing, venue scanning, resale markets, royalty enforcement, analytics, compliance. MINGO handles all of it.\n\nBeing \"on-chain\" is step one. Being production-ready across 54 countries is step fifty."}]},
+{date:"2026-03-04",dow:"Tue",gm:"gm builders ⚡ the best marketing is a great product",t2:{p:"P2",text:"Fun fact: @hedera is carbon negative.\n\nThat means every MINGO ticket sold actually contributes to a greener planet.\n\nBlockchain that's good for fans AND the environment. 🌱"},t3:{p:"P5",text:"Raise your hand if you've ever been hit with a \"service fee\" that was more than 20% of your ticket price. 🙋\n\nNow imagine that fee was 3.5%.\n\nWelcome to @mingoapps."}},
+{date:"2026-03-05",dow:"Wed",gm:"gm. hump day. halfway to the weekend, 100% committed to fair ticketing ☕",t2:{p:"P3",text:"MINGO isn't just a platform. It's a signal.\n\nWhen the WBC, Fight Circus, and promoters across 54 countries choose blockchain ticketing, the industry takes notice. 🏆"},t3:{p:"P4",text:"Still think you need to understand blockchain to use @mingoapps?\n\nHere's the user experience:\n1. Pick an event\n2. Buy a ticket\n3. Show your QR code\n\nThat's literally it. 🎯"}},
+{date:"2026-03-06",dow:"Thu",gm:"gm. the old guard is watching. let them 👀",t2:{p:"P1",text:"Legacy ticketing is a monopoly hiding behind \"convenience.\"\n\nBut convenience for who? Not the fan paying 27%. Not the artist losing resale revenue. Not the organizer trapped in exclusive contracts.\n\n@mingoapps is the exit. 🚪"},t3:{p:"P2",text:"Built on @hedera since 2018. Governed by Google, IBM, Boeing. Carbon negative. Sub-second finality. 10,000+ TPS.\n\nThis isn't experimental. This is production-grade ticketing infrastructure. ⚡"}},
+{date:"2026-03-07",dow:"Fri",li:true,gm:"gm friday. go support live events this weekend — just make sure you're not overpaying 🎟️",t2:{p:"P5",text:"2015: \"Uber will never replace taxis.\"\n2020: \"Streaming will never replace cinemas.\"\n2026: \"Blockchain will never replace legacy ticketing.\"\n\nSee you on the other side. @mingoapps ⚡"},t3:{p:"P3",text:"We're signing new partners every month. Not because blockchain is trendy — because saving 80% on fees is good business.\n\n@mingoapps on @hedera. 🤝"},lip:[{name:"Joe Arthur",role:"CEO & Co-Founder",text:"Every disruption follows the same pattern: the incumbents dismiss it, then fight it, then try to copy it.\n\nWe're seeing the ticketing industry move from stage one to stage two. By the time they reach stage three, MINGO will be too far ahead.\n\nFirst-mover advantage in blockchain ticketing isn't a buzzword for us — it's eight years of compounding."},{name:"Deirdre Arthur",role:"Co-Founder & President",text:"Friday reflection: the proudest moments in building MINGO aren't the big partnership announcements.\n\nThey're the small ones — an organizer telling us they could afford better production because they saved on ticketing fees. A fan who bought their first ticket without knowing it was an NFT.\n\nThat's impact."},{name:"Cillian Arthur",role:"Marketing Manager",text:"This week's takeaway: the gap between \"blockchain ticketing exists\" and \"people know blockchain ticketing exists\" is still massive.\n\nOur job in marketing isn't to sell crypto — it's to show organizers and fans that better is already here.\n\nEducation over hype. Always."},{name:"Jason Teji",role:"COO",text:"Spent this week deep in our analytics pipeline. The data from 54 countries tells a clear story: scan times are sub-second regardless of network conditions, fraud attempts on MINGO tickets are essentially zero (thanks Hedera), and organizer retention is strong.\n\nThe product speaks. Our job is to scale."}]},
+{date:"2026-03-08",dow:"Sat",gm:"gm weekend. rest up, big week ahead 🌍",t2:{p:"P4",text:"MINGO works as a PWA — progressive web app. That means it works on any phone, any browser, no download.\n\niOS or Android, doesn't matter. Just open the link and go. 📱"},t3:{p:"P1",text:"In the last year, scalpers have made billions reselling tickets at markups fans can't afford.\n\nMINGO gives organizers the tools to set resale caps. Fair pricing, enforced by code. 🎟️"}},
+{date:"2026-03-09",dow:"Sun",gm:"gm sunday. recharge. the mission continues tomorrow ⚡",t2:{p:"P5",text:"What's your dream event to attend if tickets were actually affordable?\n\nDrop it below 👇\n\n@mingoapps is working on making that reality."},t3:{p:"P2",text:"@hedera isn't just another L1. It's the only DLT governed by a council of global enterprises.\n\nThat credibility matters when you're scanning 10,000 tickets at a stadium gate.\n\nEnterprise trust. Web3 innovation. 🏢"}},
+{date:"2026-03-10",dow:"Mon",li:true,gm:"gm. final stretch of the month. let's finish strong 💪",t2:{p:"P3",text:"From Ireland to Africa. From boxing to Comic-Con.\n\n@mingoapps doesn't have a niche — we have a mission. Fair ticketing, everywhere.\n\n54 countries and counting. 🌍"},t3:{p:"P1",text:"The ticketing industry takes $30 BILLION in fees every year. Most of that goes to platforms, not artists or organizers.\n\nBlockchain changes the split. @mingoapps on @hedera. 3.5%. 🎟️"},lip:[{name:"Joe Arthur",role:"CEO & Co-Founder",text:"Looking back at eight years of building MINGO, the decision to build on Hedera remains our most important one.\n\nThe governing council gave us enterprise credibility. The technology gave us speed and cost efficiency. The carbon-negative footprint gave us ESG alignment.\n\nWhen people ask \"why Hedera?\" — the real question is \"why anything else?\""},{name:"Deirdre Arthur",role:"Co-Founder & President",text:"Something I want more people to understand: MINGO isn't trying to make event ticketing \"crypto.\"\n\nWe're trying to make it fair. The blockchain is invisible to the end user. What they see is lower fees, verified tickets, and a better experience.\n\nThat's all that matters."},{name:"Cillian Arthur",role:"Marketing Manager",text:"Final push for the month: we're doubling down on organizer education.\n\nIf you run events and you're still paying double-digit fees to legacy platforms, DM me. I'll show you what 3.5% looks like in practice. No pitch. Just numbers.\n\ncillian@mingoapps.com"},{name:"Jason Teji",role:"COO",text:"End of month ops review: our infrastructure handled increased volume across three continents this month without a single scanning failure.\n\nHedera's consensus mechanism means we don't worry about network congestion during high-demand events. That reliability is non-negotiable in live events."}]},
+{date:"2026-03-11",dow:"Tue",gm:"gm. we build for the fans, the artists, and the organizers — in that order ☕",t2:{p:"P4",text:"Think of your MINGO ticket like a boarding pass — but better.\n\nIt can't be faked, it can be resold fairly, and the event creator earns from every resale.\n\nAll from a QR code. ✅"},t3:{p:"P5",text:"Legacy ticketing in 2026 is like using a fax machine.\n\nIt technically works. But why would you when something infinitely better exists?\n\n@mingoapps 📠"}},
+{date:"2026-03-12",dow:"Wed",gm:"gm. month one done. the movement is just getting started ⚡",t2:{p:"P1",text:"$6.58 billion in secondary ticket sales. Zero dollars going back to artists on legacy platforms.\n\nOn MINGO, artists earn royalties on EVERY resale. Automatically.\n\nThat's the power of on-chain ticketing. 🎵"},t3:{p:"P3",text:"When you build the best product, the partnerships follow.\n\nWBC. Fight Circus. Napster AI. Goldstar Promotions. 54 countries.\n\nAnd we're just warming up. @mingoapps 🔥"}}
+];
+
+const pillarNames = {P1:"Problem/Solution",P2:"Hedera",P3:"Partnerships",P4:"Education",P5:"Engagement"};
+const pillarClass = {P1:"p1",P2:"p2",P3:"p3",P4:"p4",P5:"p5"};
+
+function renderCalendar() {
+  const cal = document.getElementById('calendar');
+  let html = '';
+  
+  // Group by weeks
+  const weeks = [];
+  let currentWeek = [];
+  let weekNum = 1;
+  
+  days.forEach((d, i) => {
+    currentWeek.push(d);
+    if (d.dow === 'Wed' || i === days.length - 1) {
+      weeks.push({num: weekNum++, days: currentWeek});
+      currentWeek = [];
+    }
+  });
+  
+  const dowOrder = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  
+  weeks.forEach(week => {
+    html += `<div class="week-header">Week ${week.num}</div>`;
+    html += '<div class="calendar-grid">';
+    
+    // Day labels
+    dowOrder.forEach(d => html += `<div class="day-label">${d}</div>`);
+    
+    // Find which dow the week starts on
+    const startDow = dowOrder.indexOf(week.days[0].dow);
+    
+    // Empty cells before
+    for (let i = 0; i < startDow; i++) {
+      html += '<div class="day-card empty"></div>';
+    }
+    
+    // Day cards
+    week.days.forEach(d => {
+      const dayNum = d.date.split('-')[2].replace(/^0/,'');
+      const month = parseInt(d.date.split('-')[1]) === 2 ? 'Feb' : 'Mar';
+      const liClass = d.li ? ' linkedin' : '';
+      html += `<div class="day-card${liClass}" onclick="showDay('${d.date}')" id="card-${d.date}">`;
+      html += `<div class="day-name">${d.dow}</div>`;
+      html += `<div class="day-num">${month} ${dayNum}</div>`;
+      html += '<div class="day-badges">';
+      html += '<span class="badge badge-gm">GM</span>';
+      html += `<span class="badge badge-${pillarClass[d.t2.p]}">${d.t2.p}</span>`;
+      html += `<span class="badge badge-${pillarClass[d.t3.p]}">${d.t3.p}</span>`;
+      if (d.li) html += '<span class="badge badge-li">LI</span>';
+      html += '</div></div>';
+    });
+    
+    // Empty cells after
+    const endDow = dowOrder.indexOf(week.days[week.days.length - 1].dow);
+    for (let i = endDow + 1; i < 7; i++) {
+      html += '<div class="day-card empty"></div>';
+    }
+    
+    html += '</div>';
+  });
+  
+  cal.innerHTML = html;
+}
+
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+function showDay(date) {
+  // Toggle active state
+  document.querySelectorAll('.day-card').forEach(c => c.classList.remove('active'));
+  const card = document.getElementById('card-' + date);
+  if (card) card.classList.add('active');
+  
+  const d = days.find(x => x.date === date);
+  if (!d) return;
+  
+  const panel = document.getElementById('detail');
+  const month = parseInt(d.date.split('-')[1]) === 2 ? 'February' : 'March';
+  const dayNum = d.date.split('-')[2].replace(/^0/,'');
+  const dateStr = `${d.dow}, ${month} ${dayNum}`;
+  
+  let html = `<div class="detail-date">${dateStr}${d.li ? ' — 🔗 LinkedIn Day' : ''}</div>`;
+  
+  // GM Tweet
+  html += `<div class="tweet-block"><div class="tweet-label gm">☀️ GM Tweet <button class="copy-btn" onclick="copyText(this, \`${d.gm.replace(/`/g,'\\`').replace(/"/g,'&quot;')}\`)">Copy</button></div><div class="tweet-text">${d.gm}</div><div class="tweet-chars">${d.gm.length}/280</div></div>`;
+  
+  // Tweet 2
+  html += `<div class="tweet-block"><div class="tweet-label ${pillarClass[d.t2.p]}">Tweet 2 — ${pillarNames[d.t2.p]} <button class="copy-btn" onclick="copyText(this, \`${d.t2.text.replace(/`/g,'\\`').replace(/"/g,'&quot;')}\`)">Copy</button></div><div class="tweet-text">${d.t2.text}</div><div class="tweet-chars">${d.t2.text.length}/280</div></div>`;
+  
+  // Tweet 3
+  html += `<div class="tweet-block"><div class="tweet-label ${pillarClass[d.t3.p]}">Tweet 3 — ${pillarNames[d.t3.p]} <button class="copy-btn" onclick="copyText(this, \`${d.t3.text.replace(/`/g,'\\`').replace(/"/g,'&quot;')}\`)">Copy</button></div><div class="tweet-text">${d.t3.text}</div><div class="tweet-chars">${d.t3.text.length}/280</div></div>`;
+  
+  // LinkedIn
+  if (d.li && d.lip) {
+    html += '<div class="linkedin-section">';
+    html += '<div class="linkedin-title">🔗 LinkedIn Posts</div>';
+    d.lip.forEach(p => {
+      html += `<div class="li-post"><div class="li-name">${p.name} <button class="copy-btn" onclick="copyText(this, \`${p.text.replace(/`/g,'\\`').replace(/"/g,'&quot;')}\`)">Copy</button></div><div class="li-role">${p.role}</div><div class="li-text">${p.text}</div></div>`;
+    });
+    html += '</div>';
+  }
+  
+  html += '';
+  panel.innerHTML = html;
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+renderCalendar();
+// Auto-show first day
+showDay('2026-02-13');
+</script>
+</body>
+</html>

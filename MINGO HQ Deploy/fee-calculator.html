@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINGO Tickets - Fee Comparison Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #272943;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: #45B75F;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .input-section {
+            background: #272943;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        input, select {
+            background: #0a0a0a;
+            border: 2px solid #45B75F;
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #F15F22;
+            box-shadow: 0 0 0 3px rgba(241, 95, 34, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .results {
+            display: grid;
+            gap: 20px;
+        }
+
+        .platform-card {
+            background: #272943;
+            padding: 25px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .platform-card.mingo {
+            border: 2px solid #45B75F;
+            background: linear-gradient(135deg, #272943 0%, #1a3a28 100%);
+        }
+
+        .platform-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .platform-name {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .platform-rate {
+            font-size: 14px;
+            color: #F15F22;
+            background: rgba(241, 95, 34, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .mingo .platform-rate {
+            color: #45B75F;
+            background: rgba(69, 183, 95, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .savings {
+            background: linear-gradient(90deg, rgba(69, 183, 95, 0.2) 0%, transparent 100%);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #45B75F;
+        }
+
+        .savings-label {
+            font-size: 12px;
+            color: #45B75F;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .savings-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #45B75F;
+        }
+
+        .chart-section {
+            background: #272943;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .chart-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chart-label {
+            min-width: 120px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .chart-bar-container {
+            flex: 1;
+            background: #0a0a0a;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #F15F22, #ff7a4d);
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .chart-bar-fill.mingo {
+            background: linear-gradient(90deg, #45B75F, #5dd67e);
+        }
+
+        .chart-value {
+            min-width: 80px;
+            text-align: right;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, #272943 0%, #1a3a28 100%);
+            border-radius: 12px;
+            border: 2px solid #45B75F;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #45B75F;
+            color: #0a0a0a;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .cta-button:hover {
+            background: #5dd67e;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(69, 183, 95, 0.3);
+        }
+
+        .share-button {
+            background: #F15F22;
+        }
+
+        .share-button:hover {
+            background: #ff7a4d;
+            box-shadow: 0 10px 30px rgba(241, 95, 34, 0.3);
+        }
+
+        .copied-message {
+            display: none;
+            color: #45B75F;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .copied-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .chart-label {
+                min-width: auto;
+            }
+
+            .cta-button {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🎟️ MINGO</div>
+        </div>
+
+        <h1>Fee Comparison Calculator</h1>
+        <p class="subtitle">See how much you can save with blockchain-powered ticketing</p>
+
+        <div class="input-section">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Ticket Price (€)</label>
+                    <input type="number" id="ticketPrice" value="50" min="0" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Number of Tickets</label>
+                    <input type="number" id="numTickets" value="1000" min="1" step="1">
+                </div>
+                <div class="input-group">
+                    <label>Event Type</label>
+                    <select id="eventType">
+                        <option value="Music">Music</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Theatre">Theatre</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Conference">Conference</option>
+                        <option value="Charity">Charity</option>
+                        <option value="Nightlife">Nightlife</option>
+                        <option value="Food & Drink">Food & Drink</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="results" id="results"></div>
+
+        <div class="chart-section">
+            <h3 class="chart-title">Total Fees Comparison</h3>
+            <div class="chart-bars" id="chartBars"></div>
+        </div>
+
+        <div class="cta-section">
+            <button class="cta-button share-button" onclick="shareResults()">📋 Share these results</button>
+            <a href="https://tickets.mingo.com" class="cta-button" target="_blank">Ready to save? → tickets.mingo.com</a>
+            <div class="copied-message" id="copiedMessage">✓ Results copied to clipboard!</div>
+        </div>
+    </div>
+
+    <script>
+        const platforms = [
+            {
+                name: 'Legacy Platforms',
+                rate: 0.27,
+                fixed: 0,
+                isMingo: false
+            },
+            {
+                name: 'Eventbrite',
+                rate: 0.069,
+                fixed: 0.79,
+                isMingo: false
+            },
+            {
+                name: 'Dice',
+                rate: 0.10,
+                fixed: 0,
+                isMingo: false
+            },
+            {
+                name: 'MINGO',
+                rate: 0.035,
+                fixed: 0,
+                isMingo: true
+            }
+        ];
+
+        function calculate() {
+            const ticketPrice = parseFloat(document.getElementById('ticketPrice').value) || 0;
+            const numTickets = parseInt(document.getElementById('numTickets').value) || 0;
+            const eventType = document.getElementById('eventType').value;
+
+            const totalRevenue = ticketPrice * numTickets;
+            const resultsContainer = document.getElementById('results');
+            const chartContainer = document.getElementById('chartBars');
+
+            resultsContainer.innerHTML = '';
+            chartContainer.innerHTML = '';
+
+            let mingoFees = 0;
+            let maxFees = 0;
+
+            platforms.forEach(platform => {
+                const feePerTicket = (ticketPrice * platform.rate) + platform.fixed;
+                const totalFees = feePerTicket * numTickets;
+                const organizerRevenue = totalRevenue - totalFees;
+
+                if (platform.isMingo) {
+                    mingoFees = totalFees;
+                } else {
+                    maxFees = Math.max(maxFees, totalFees);
+                }
+
+                const card = document.createElement('div');
+                card.className = `platform-card ${platform.isMingo ? 'mingo' : ''}`;
+
+                const rateText = platform.fixed > 0 
+                    ? `${(platform.rate * 100).toFixed(1)}% + €${platform.fixed.toFixed(2)}`
+                    : `${(platform.rate * 100).toFixed(1)}%`;
+
+                let savingsHTML = '';
+                if (!platform.isMingo) {
+                    const savings = totalFees - mingoFees;
+                    savingsHTML = `
+                        <div class="savings">
+                            <div class="savings-label">Save with MINGO</div>
+                            <div class="savings-value">€${savings.toLocaleString('en-IE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="platform-header">
+                        <div class="platform-name">${platform.name}</div>
+                        <div class="platform-rate">${rateText}</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <div class="stat-label">Fee per Ticket</div>
+                            <div class="stat-value">€${feePerTicket.toFixed(2)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Total Fees</div>
+                            <div class="stat-value">€${totalFees.toLocaleString('en-IE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Your Revenue</div>
+                            <div class="stat-value">€${organizerRevenue.toLocaleString('en-IE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                    </div>
+                    ${savingsHTML}
+                `;
+
+                resultsContainer.appendChild(card);
+            });
+
+            // Create chart bars
+            platforms.forEach(platform => {
+                const feePerTicket = (ticketPrice * platform.rate) + platform.fixed;
+                const totalFees = feePerTicket * numTickets;
+                const percentage = maxFees > 0 ? (totalFees / maxFees) * 100 : 0;
+
+                const barRow = document.createElement('div');
+                barRow.className = 'chart-bar';
+
+                barRow.innerHTML = `
+                    <div class="chart-label">${platform.name}</div>
+                    <div class="chart-bar-container">
+                        <div class="chart-bar-fill ${platform.isMingo ? 'mingo' : ''}" style="width: ${percentage}%"></div>
+                    </div>
+                    <div class="chart-value">€${totalFees.toLocaleString('en-IE', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</div>
+                `;
+
+                chartContainer.appendChild(barRow);
+            });
+        }
+
+        function shareResults() {
+            const ticketPrice = parseFloat(document.getElementById('ticketPrice').value) || 0;
+            const numTickets = parseInt(document.getElementById('numTickets').value) || 0;
+            const eventType = document.getElementById('eventType').value;
+
+            let shareText = `🎟️ MINGO Fee Comparison - ${eventType} Event\n\n`;
+            shareText += `Ticket Price: €${ticketPrice.toFixed(2)} × ${numTickets.toLocaleString()} tickets\n\n`;
+
+            platforms.forEach(platform => {
+                const feePerTicket = (ticketPrice * platform.rate) + platform.fixed;
+                const totalFees = feePerTicket * numTickets;
+                const organizerRevenue = (ticketPrice * numTickets) - totalFees;
+
+                shareText += `${platform.name}:\n`;
+                shareText += `  Fee per ticket: €${feePerTicket.toFixed(2)}\n`;
+                shareText += `  Total fees: €${totalFees.toLocaleString('en-IE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n`;
+                shareText += `  Your revenue: €${organizerRevenue.toLocaleString('en-IE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\n`;
+            });
+
+            const mingoFees = (ticketPrice * 0.035) * numTickets;
+            const legacyFees = (ticketPrice * 0.27) * numTickets;
+            const totalSavings = legacyFees - mingoFees;
+
+            shareText += `💰 Save €${totalSavings.toLocaleString('en-IE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} vs Legacy Platforms!\n\n`;
+            shareText += `Ready to save? → https://tickets.mingo.com`;
+
+            navigator.clipboard.writeText(shareText).then(() => {
+                const message = document.getElementById('copiedMessage');
+                message.classList.add('show');
+                setTimeout(() => {
+                    message.classList.remove('show');
+                }, 3000);
+            }).catch(err => {
+                alert('Failed to copy to clipboard. Please try again.');
+            });
+        }
+
+        // Add event listeners
+        document.getElementById('ticketPrice').addEventListener('input', calculate);
+        document.getElementById('numTickets').addEventListener('input', calculate);
+        document.getElementById('eventType').addEventListener('change', calculate);
+
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
